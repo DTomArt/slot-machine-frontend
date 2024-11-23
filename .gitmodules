@@ -1,0 +1,3 @@
+[submodule "slot-machine"]
+	path = slot-machine
+	url = https://github.com/DTomArt/slot-machine
