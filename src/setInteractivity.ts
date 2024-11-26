@@ -60,7 +60,7 @@ export function setInteractivity(
             running = false;
             checkWinLine(line);
           }
-          sound.play("stop");
+        //   sound.play("stop");
         })
         .start();
     }

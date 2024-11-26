@@ -8,6 +8,7 @@ import {
   Text,
 } from "pixi.js";
 import { Configuration, Reel } from "./types.js";
+import {ReelNew} from "./ReelNew.js";
 
 // onAssetsLoaded handler builds the slot machine
 export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
@@ -32,6 +33,13 @@ export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
   // Create each reel
   const reels: Reel[] = [];
   const reelContainer = new Container();
+  reelContainer.name = "reelContainer";
+  const mask = new Graphics().beginFill(0xff0000).drawRect(0, 0, reelWidth *6, symbolSize * 6).endFill();
+  reelContainer.mask = mask;
+
+  app.stage.addChild(mask);
+
+  app.stage.addChild(new ReelNew());
 
   for (let i = 0; i < 3; i++) {
     const rc = new Container();

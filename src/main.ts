@@ -3,6 +3,7 @@ import { preload } from "./preload.js";
 import { onAssetsLoaded } from "./onAssetsLoaded.js";
 import { Configuration } from "./types.js";
 import { setInteractivity } from "./setInteractivity.js";
+import * as PIXI from "pixi.js";
 
 // Create the application
 export const app = new Application<HTMLCanvasElement>({
@@ -16,6 +17,16 @@ export const app = new Application<HTMLCanvasElement>({
   height: window.innerHeight,
   // backgroundAlpha: 0.2,
 });
+
+    (<any>window).__PIXI_INSPECTOR_GLOBAL_HOOK__ &&
+    (<any>window).__PIXI_INSPECTOR_GLOBAL_HOOK__.register({
+        PIXI: PIXI
+    });
+
+    //@ts-ignore
+    globalThis.__PIXI_STAGE__ = app.stage;
+    //@ts-ignore
+    globalThis.__PIXI_RENDERER__ = app.renderer;
 
 (async () => {
   const configuration: Configuration = {
