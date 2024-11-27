@@ -51,7 +51,9 @@ export function setInteractivity(
       new TWEEN.Tween(r)
         .to({ position: target }, time)
         .onStart(() => {
-          sound.play("spin");
+            debugger;
+            app.stage.emit("spin_play");
+        //   sound.play("spin");
         })
         .easing(backout(0.2))
         .onComplete(() => {

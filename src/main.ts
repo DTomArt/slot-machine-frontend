@@ -18,6 +18,10 @@ export const app = new Application<HTMLCanvasElement>({
   // backgroundAlpha: 0.2,
 });
 
+app.ticker.add(() => {
+    console.log("dupa")
+});
+
     (<any>window).__PIXI_INSPECTOR_GLOBAL_HOOK__ &&
     (<any>window).__PIXI_INSPECTOR_GLOBAL_HOOK__.register({
         PIXI: PIXI

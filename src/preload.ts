@@ -1,5 +1,6 @@
 import { sound } from "@pixi/sound";
 import { Assets } from "pixi.js";
+import { app } from "./main.js";
 
 export async function preload() {
   const assets = [
@@ -17,4 +18,10 @@ export async function preload() {
   sound.add("win", "src/static/sound/win.mp3");
   sound.volume("spin", 0.01);
   sound.volume("win", 0.05);
+
+  debugger;
+  app.stage.on("spin_play", () => {
+    debugger;
+    sound.play("spin");
+  });
 }

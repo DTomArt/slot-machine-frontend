@@ -33,6 +33,10 @@ export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
   // Create each reel
   const reels: Reel[] = [];
   const reelContainer = new Container();
+  reelContainer.on("reelContainer", () => {
+      debugger;
+    });
+    reelContainer.emit("reelContainer");
   reelContainer.name = "reelContainer";
   const mask = new Graphics().beginFill(0xff0000).drawRect(0, 0, reelWidth *6, symbolSize * 6).endFill();
   reelContainer.mask = mask;
