@@ -1,14 +1,6 @@
-import {
-  BlurFilter,
-  Container,
-  Graphics,
-  Sprite,
-  TextStyle,
-  Texture,
-  Text,
-} from "pixi.js";
+import { Graphics, Sprite, TextStyle, Texture, Text } from "pixi.js";
 import { Configuration, Reel } from "./types.js";
-import {ReelNew} from "./ReelNew.js";
+import { ReelsContainer } from "./ReelsContainer.js";
 
 // onAssetsLoaded handler builds the slot machine
 export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
@@ -16,76 +8,7 @@ export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
   reels: Reel[];
   buttonText: Text;
 } {
-  const slotTextures = [
-    Texture.from("singleBar.png"),
-    Texture.from("doubleBar.png"),
-    Texture.from("tripleBar.png"),
-    Texture.from("blackGold.png"),
-  ];
-
-  // Create different slot textures
-  const reelStrips = [
-    [1, 2, 1, 3, 3, 1, 2, 0, 2, 3],
-    [1, 1, 1, 2, 2, 0, 2, 3, 3, 3, 3, 1, 2, 2, 0],
-    [3, 1, 2, 3, 2, 3, 3, 2],
-  ];
-
-  // Create each reel
-  const reels: Reel[] = [];
-  const reelContainer = new Container();
-  reelContainer.on("reelContainer", () => {
-      debugger;
-    });
-    reelContainer.emit("reelContainer");
-  reelContainer.name = "reelContainer";
-  const mask = new Graphics().beginFill(0xff0000).drawRect(0, 0, reelWidth *6, symbolSize * 6).endFill();
-  reelContainer.mask = mask;
-
-  app.stage.addChild(mask);
-
-  app.stage.addChild(new ReelNew());
-
-  for (let i = 0; i < 3; i++) {
-    const rc = new Container();
-    // rc.x = i === 0 ? i * REEL_WIDTH : i * (REEL_WIDTH + 150);
-    rc.x = i * reelWidth;
-    reelContainer.addChild(rc);
-
-    const reel: Reel = {
-      container: rc,
-      strip: [],
-      symbols: [],
-      position: 0,
-      previousPosition: 0,
-      blur: new BlurFilter(),
-    };
-
-    // Randomise start of sequence
-    const randomStartIndex = Math.floor(Math.random() * reelStrips[i].length);
-    const randomStartSequence = [
-      ...reelStrips[i].slice(randomStartIndex),
-      ...reelStrips[i].slice(0, randomStartIndex),
-    ];
-    reel.strip.push(...randomStartSequence);
-    reel.blur.blurX = 0;
-    reel.blur.blurY = 0;
-    rc.filters = [reel.blur];
-
-    // Build the symbols
-    for (let j = 0; j < reel.strip.length; j++) {
-      const texturesIndex = reel.strip[j];
-      const symbol = new Sprite(slotTextures[texturesIndex]);
-      // Scale the symbol to fit symbol area
-      symbol.y = j * symbolSize;
-      symbol.scale.x = symbol.scale.y =
-        Math.min(symbolSize / symbol.width, symbolSize / symbol.height) * 0.95;
-      symbol.x = Math.round((symbolSize - symbol.width) / 2);
-      // console.log(symbol.width);
-      reel.symbols.push(symbol);
-      rc.addChild(symbol);
-    }
-    reels.push(reel);
-  }
+  const reelContainer = new ReelsContainer();
   app.stage.addChild(reelContainer);
 
   // Build top, bottom, left & right covers and position reelContainer
@@ -160,6 +83,8 @@ export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
   app.stage.addChild(bottom);
   app.stage.addChild(left);
   app.stage.addChild(right);
+
+  const reels = reelContainer.getReels();
 
   return { button, reels, buttonText };
 }

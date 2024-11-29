@@ -5,6 +5,9 @@ import { Configuration } from "./types.js";
 import { setInteractivity } from "./setInteractivity.js";
 import * as PIXI from "pixi.js";
 
+export const REEL_WIDTH = 160;
+export const SYMBOL_SIZE = 150;
+
 // Create the application
 export const app = new Application<HTMLCanvasElement>({
   // background: "#000000",
@@ -18,19 +21,15 @@ export const app = new Application<HTMLCanvasElement>({
   // backgroundAlpha: 0.2,
 });
 
-app.ticker.add(() => {
-    console.log("dupa")
-});
+(<any>window).__PIXI_INSPECTOR_GLOBAL_HOOK__ &&
+  (<any>window).__PIXI_INSPECTOR_GLOBAL_HOOK__.register({
+    PIXI: PIXI,
+  });
 
-    (<any>window).__PIXI_INSPECTOR_GLOBAL_HOOK__ &&
-    (<any>window).__PIXI_INSPECTOR_GLOBAL_HOOK__.register({
-        PIXI: PIXI
-    });
-
-    //@ts-ignore
-    globalThis.__PIXI_STAGE__ = app.stage;
-    //@ts-ignore
-    globalThis.__PIXI_RENDERER__ = app.renderer;
+//@ts-ignore
+globalThis.__PIXI_STAGE__ = app.stage;
+//@ts-ignore
+globalThis.__PIXI_RENDERER__ = app.renderer;
 
 (async () => {
   const configuration: Configuration = {

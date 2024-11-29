@@ -19,9 +19,9 @@ export async function preload() {
   sound.volume("spin", 0.01);
   sound.volume("win", 0.05);
 
-  debugger;
-  app.stage.on("spin_play", () => {
-    debugger;
-    sound.play("spin");
-  });
+  // debugger;
+  // app.stage.on("spin_play", () => {
+  //   debugger;
+  //   sound.play("spin");
+  // });
 }

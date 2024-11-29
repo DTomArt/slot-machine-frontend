@@ -51,9 +51,9 @@ export function setInteractivity(
       new TWEEN.Tween(r)
         .to({ position: target }, time)
         .onStart(() => {
-            debugger;
-            app.stage.emit("spin_play");
-        //   sound.play("spin");
+          // debugger;
+          // app.stage.emit("spin_play");
+          sound.play("spin");
         })
         .easing(backout(0.2))
         .onComplete(() => {
@@ -62,7 +62,7 @@ export function setInteractivity(
             running = false;
             checkWinLine(line);
           }
-        //   sound.play("stop");
+          //   sound.play("stop");
         })
         .start();
     }
