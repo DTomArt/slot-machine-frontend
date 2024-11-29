@@ -1,6 +1,7 @@
 import { Graphics, Sprite, TextStyle, Texture, Text } from "pixi.js";
 import { Configuration, Reel } from "./types.js";
 import { ReelsContainer } from "./ReelsContainer.js";
+import { REEL_WIDTH } from "./main.js";
 
 // onAssetsLoaded handler builds the slot machine
 export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
@@ -14,7 +15,8 @@ export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
   // Build top, bottom, left & right covers and position reelContainer
   const margin = (app.screen.height - symbolSize * 3) / 2;
   reelContainer.y = margin;
-  reelContainer.x = Math.round(app.screen.width - reelWidth * 3) / 2;
+  const reels = reelContainer.getReels();
+  reelContainer.x = 0;
   const top = new Graphics();
   // top.beginFill(new Color("red").toArray(), 1);
   top.beginFill(0, 1);
@@ -28,15 +30,15 @@ export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
   left.drawRect(
     0,
     margin - 5,
-    Math.round(app.screen.width - reelWidth * 5) / 2,
+    Math.round(app.screen.width - REEL_WIDTH * 5) / 2,
     app.screen.height - margin * 2
   );
   const right = new Graphics();
   right.beginFill(0, 1);
   right.drawRect(
-    Math.round(app.screen.width - (app.screen.width - reelWidth * 5) / 2),
+    Math.round(app.screen.width - (app.screen.width - REEL_WIDTH * 5) / 2),
     margin - 5,
-    Math.round(app.screen.width - reelWidth * 5) / 2,
+    Math.round(app.screen.width - REEL_WIDTH * 5) / 2,
     app.screen.height - margin * 2
   );
 
@@ -83,8 +85,6 @@ export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
   app.stage.addChild(bottom);
   app.stage.addChild(left);
   app.stage.addChild(right);
-
-  const reels = reelContainer.getReels();
 
   return { button, reels, buttonText };
 }

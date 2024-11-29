@@ -10,6 +10,7 @@ export interface Reel {
   container: Container;
   strip: number[];
   symbols: Sprite[];
+  reelBackground: Sprite;
   position: number;
   previousPosition: number;
   blur: BlurFilter;
