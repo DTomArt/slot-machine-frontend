@@ -17,14 +17,15 @@ export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
   reelContainer.y = margin;
   const reels = reelContainer.getReels();
   reelContainer.x = 0;
+
   const top = new Graphics();
-  // top.beginFill(new Color("red").toArray(), 1);
   top.beginFill(0, 1);
   top.drawRect(0, 0, app.screen.width, margin - 5);
-  // app.stage.addChild(top);
+
   const bottom = new Graphics();
   bottom.beginFill(0, 1);
   bottom.drawRect(0, symbolSize * 3 + margin - 5, app.screen.width, margin + 5);
+
   const left = new Graphics();
   left.beginFill(0, 1);
   left.drawRect(
@@ -33,6 +34,7 @@ export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
     Math.round(app.screen.width - REEL_WIDTH * 5) / 2,
     app.screen.height - margin * 2
   );
+
   const right = new Graphics();
   right.beginFill(0, 1);
   right.drawRect(
@@ -47,7 +49,6 @@ export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
   const button = new Sprite(textureButton);
   button.scale.set(0.3, 0.25);
   button.anchor.set(0.5);
-  //   button.x = Math.round((bottom.width - button.width) / 2);
   button.x = Math.round(app.screen.width / 2);
   button.y =
     app.screen.height -
@@ -81,10 +82,7 @@ export function onAssetsLoaded({ app, reelWidth, symbolSize }: Configuration): {
   headerText.y = Math.round((margin - headerText.height) / 2);
   top.addChild(headerText);
 
-  app.stage.addChild(top);
-  app.stage.addChild(bottom);
-  app.stage.addChild(left);
-  app.stage.addChild(right);
+  app.stage.addChild(top, bottom, left, right);
 
   return { button, reels, buttonText };
 }

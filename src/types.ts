@@ -6,8 +6,13 @@ export interface Configuration {
   symbolSize: number;
 }
 
+export interface ReelsContainer {
+  reelBackground: Sprite;
+  reels: Reel[];
+}
+
 export interface Reel {
-  container: Container;
+  id: number;
   strip: number[];
   symbols: Sprite[];
   reelBackground: Sprite;
