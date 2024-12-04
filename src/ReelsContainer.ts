@@ -1,6 +1,7 @@
-import { Container, Texture } from "pixi.js";
+import { Container, Sprite, Texture } from "pixi.js";
 import { Reel } from "./types.js";
 import { ReelContainer } from "./ReelContainer.js";
+import { app, REEL_WIDTH, SYMBOL_SIZE } from "./main.js";
 
 export class ReelsContainer extends Container {
   private reels: Reel[] = [];
@@ -21,6 +22,15 @@ export class ReelsContainer extends Container {
       [1, 1, 1, 2, 2, 0, 2, 3, 3, 3, 3, 1, 2, 2, 0],
       [3, 1, 2, 3, 2, 3, 3, 2],
     ];
+
+    for (let i = 0; i < 2; i++) {
+      for (let j = 0; j < 3; j++) {
+        const diamond = new Sprite(Texture.from("diamond.png"));
+        diamond.x = REEL_WIDTH + app.screen.width / 3 - i * REEL_WIDTH;
+        diamond.y = SYMBOL_SIZE * j;
+        this.addChild(diamond);
+      }
+    }
 
     for (let i = 0; i < 3; i++) {
       const reelContainer = new ReelContainer(i, reelStrips[i], slotTextures);

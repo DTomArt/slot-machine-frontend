@@ -44,13 +44,13 @@ export class ReelContainer extends Container {
     this.reelBackground = reelBackground;
 
     const rc = new Container();
-    // rc.x = i * REEL_WIDTH;
     rc.x =
       reelId === 0
         ? app.screen.width / 2
         : reelId === 2
         ? app.screen.width / 2 - REEL_WIDTH
         : app.screen.width / 2 + REEL_WIDTH;
+    rc.y = 50;
     this.addChild(rc);
 
     this.reelPositionX = rc.x;

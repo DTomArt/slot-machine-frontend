@@ -5,7 +5,7 @@ import { Configuration } from "./types.js";
 import { setInteractivity } from "./setInteractivity.js";
 import * as PIXI from "pixi.js";
 
-export const REEL_WIDTH = 300;
+export const REEL_WIDTH = 350;
 export const SYMBOL_SIZE = 150;
 
 // Create the application
