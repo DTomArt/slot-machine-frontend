@@ -11,14 +11,11 @@ export const SYMBOL_SIZE = 150;
 // Create the application
 export const app = new Application<HTMLCanvasElement>({
   background: "#000000",
-  // background: "#FFFFFF",
   resizeTo: window,
   antialias: false,
-  // resolution: window.devicePixelRatio || 1,
   autoDensity: true,
   width: window.innerWidth,
   height: window.innerHeight,
-  // backgroundAlpha: 0.2,
 });
 
 (<any>window).__PIXI_INSPECTOR_GLOBAL_HOOK__ &&
@@ -34,13 +31,11 @@ globalThis.__PIXI_RENDERER__ = app.renderer;
 (async () => {
   const configuration: Configuration = {
     app,
-    reelWidth: 160,
-    symbolSize: 150,
   };
   await setup();
   await preload();
   const { button, buttonText, reels } = onAssetsLoaded(configuration);
-  setInteractivity(configuration, { button, buttonText, reels });
+  setInteractivity({ button, buttonText, reels });
 })();
 
 async function setup() {

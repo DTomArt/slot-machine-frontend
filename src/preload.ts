@@ -15,13 +15,14 @@ export async function preload() {
   await Assets.load(assets.map((a) => a.alias));
 
   sound.add("spin", "src/static/sound/spin.mp3");
-  sound.add("win", "src/static/sound/win.mp3");
+  sound.add("stop", "src/static/sound/stop.mp3");
   sound.volume("spin", 0.01);
-  sound.volume("win", 0.05);
+  sound.volume("stop", 0.05);
 
-  // debugger;
-  // app.stage.on("spin_play", () => {
-  //   debugger;
-  //   sound.play("spin");
-  // });
+  app.stage.on("spin_play", () => {
+    sound.play("spin");
+  });
+  app.stage.on("spin_stop", () => {
+    sound.play("stop");
+  });
 }

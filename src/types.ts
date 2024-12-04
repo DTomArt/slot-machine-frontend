@@ -2,8 +2,6 @@ import { Application, BlurFilter, Container, Sprite } from "pixi.js";
 
 export interface Configuration {
   app: Application<HTMLCanvasElement>;
-  reelWidth: number;
-  symbolSize: number;
 }
 
 export interface ReelsContainer {

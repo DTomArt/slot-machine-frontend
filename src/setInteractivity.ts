@@ -1,21 +1,63 @@
 import { Sprite, Text } from "pixi.js";
-import { Configuration, Reel } from "./types.js";
+import { Reel } from "./types.js";
 import TWEEN from "@tweenjs/tween.js";
-import { sound } from "@pixi/sound";
 import { play } from "../slot-machine/src/play.js";
+import { app, SYMBOL_SIZE } from "./main.js";
 
-export function setInteractivity(
-  { app, symbolSize }: Configuration,
-  {
-    button,
-    buttonText,
-    reels,
-  }: {
-    button: Sprite;
-    buttonText: Text;
-    reels: Reel[];
+// Function to start playing
+function startPlay(running: Boolean, reels: Reel[], line: string[]) {
+  if (running) return;
+  running = true;
+
+  // Custom easing function
+  function backout(amount: number) {
+    return (t: number) => --t * t * ((amount + 1) * t + amount) + 1;
   }
-) {
+
+  for (let i = 0; i < reels.length; i++) {
+    const r = reels[i];
+    const extra = Math.floor(Math.random() * 3);
+    const target = r.position + 10 + i * 5 + extra;
+    const time = 3500 + i * 250;
+    new TWEEN.Tween(r)
+      .to({ position: target }, time)
+      .onStart(() => {
+        app.stage.emit("spin_play");
+      })
+      .easing(backout(0.2))
+      .onComplete(() => {
+        isWinLineSymbol(r, line);
+        if (i === reels.length - 1) {
+          running = false;
+          checkWinLine(line);
+        }
+        app.stage.emit("spin_stop");
+      })
+      .start();
+  }
+}
+
+function isWinLineSymbol(currentReel: any, line: string[]) {
+  const winLineSymbol = currentReel.symbols.find(
+    (symbol: Sprite) => Math.round(symbol.y) === 150
+  )._texture.textureCacheIds;
+  console.log(winLineSymbol);
+  line.push(winLineSymbol);
+}
+function checkWinLine(line: string[]) {
+  const win = line.every((x, i, a) => x === a[0]);
+  console.log(win ? "You won!" : "Try again!");
+}
+
+export function setInteractivity({
+  button,
+  buttonText,
+  reels,
+}: {
+  button: Sprite;
+  buttonText: Text;
+  reels: Reel[];
+}) {
   // Add buttonDown effect
   const onButtonDown = function () {
     button.scale.set(0.25, 0.2);
@@ -26,60 +68,16 @@ export function setInteractivity(
     buttonText.scale.set(3);
   };
   // Set the interactivity
-  button.interactive = true;
+  button.eventMode = "static";
   button.cursor = "pointer";
   button.on("pointerdown", onButtonDown).on("pointerup", onButtonUp);
-  button.addListener("pointerdown", () => {
-    startPlay();
-  });
   let running = false;
-  // Function to start playing
-  function startPlay() {
-    if (running) return;
-    running = true;
-
-    // Custom easing function
-    function backout(amount: number) {
-      return (t: number) => --t * t * ((amount + 1) * t + amount) + 1;
-    }
-
-    for (let i = 0; i < reels.length; i++) {
-      const r = reels[i];
-      const extra = Math.floor(Math.random() * 3);
-      const target = r.position + 10 + i * 5 + extra;
-      const time = 2000 + i * 250;
-      new TWEEN.Tween(r)
-        .to({ position: target }, time)
-        .onStart(() => {
-          // debugger;
-          // app.stage.emit("spin_play");
-          sound.play("spin");
-        })
-        .easing(backout(0.2))
-        .onComplete(() => {
-          isWinLineSymbol(r);
-          if (i === reels.length - 1) {
-            running = false;
-            checkWinLine(line);
-          }
-          //   sound.play("stop");
-        })
-        .start();
-    }
-  }
   // Function to check win line
   let line: string[] = [];
-  function isWinLineSymbol(currentReel: any) {
-    const winLineSymbol = currentReel.symbols.find(
-      (symbol: Sprite) => Math.round(symbol.y) === 150
-    )._texture.textureCacheIds;
-    console.log(winLineSymbol);
-    line.push(winLineSymbol);
-  }
-  function checkWinLine(line: string[]) {
-    const win = line.every((x, i, a) => x === a[0]);
-    console.log(win ? "You won!" : "Try again!");
-  }
+  button.addListener("pointerdown", () => {
+    startPlay(running, reels, line);
+  });
+
   // Listen for animate update
   app.ticker.add(() => {
     // Update the slots
@@ -91,7 +89,8 @@ export function setInteractivity(
       // Update symbol positions on reel
       for (let j = 0; j < r.symbols.length; j++) {
         const s = r.symbols[j];
-        s.y = ((r.position + j) % r.symbols.length) * symbolSize - symbolSize;
+        s.y = ((r.position + j) % r.symbols.length) * SYMBOL_SIZE - SYMBOL_SIZE;
+        // s.y = app.screen.height / 2;
       }
     }
     // Update tweens group

@@ -33,7 +33,7 @@ export class ReelContainer extends Container {
     reelBackground.anchor.set(0.5);
     reelBackground.scale.x = 0.22;
     reelBackground.scale.y = 0.45;
-    reelBackground.y = (app.screen.height - SYMBOL_SIZE * 3) / 2 + 15;
+    reelBackground.y = app.screen.height / 4;
     reelBackground.x =
       reelId === 0
         ? app.screen.width / 2
@@ -79,7 +79,6 @@ export class ReelContainer extends Container {
         Math.min(SYMBOL_SIZE / symbol.width, SYMBOL_SIZE / symbol.height) *
         0.95;
       symbol.x = Math.round((SYMBOL_SIZE - symbol.width) / 2);
-      // console.log(symbol.width);
       this.symbols.push(symbol);
       rc.addChild(symbol);
     }
