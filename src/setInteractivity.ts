@@ -90,7 +90,6 @@ export function setInteractivity({
       for (let j = 0; j < r.symbols.length; j++) {
         const s = r.symbols[j];
         s.y = ((r.position + j) % r.symbols.length) * SYMBOL_SIZE - SYMBOL_SIZE;
-        // s.y = app.screen.height / 2;
       }
     }
     // Update tweens group
