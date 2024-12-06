@@ -9,10 +9,7 @@ function startPlay(running: Boolean, reels: Reel[], line: string[]) {
   if (running) return;
   running = true;
 
-  const result = play(
-    { jackpotBonus: 3000, jackpotNegativeBonus: -139, bet: 2 },
-    1
-  );
+  const result = play(1);
   console.log(result);
   // Custom easing function
   function backout(amount: number) {

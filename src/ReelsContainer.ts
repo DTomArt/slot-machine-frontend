@@ -9,6 +9,8 @@ export class ReelsContainer extends Container {
   constructor() {
     super();
 
+    this.initDiamonds();
+
     const slotTextures = [
       Texture.from("singleBar.png"),
       Texture.from("doubleBar.png"),
@@ -23,15 +25,6 @@ export class ReelsContainer extends Container {
       [2, 1, 2, 0, 2, 0, 3, 2],
     ];
 
-    for (let i = 0; i < 2; i++) {
-      for (let j = 0; j < 3; j++) {
-        const diamond = new Sprite(Texture.from("diamond.png"));
-        diamond.x = REEL_WIDTH + app.screen.width / 3 - i * REEL_WIDTH;
-        diamond.y = SYMBOL_SIZE * j;
-        this.addChild(diamond);
-      }
-    }
-
     for (let i = 0; i < 3; i++) {
       const reelContainer = new ReelContainer(i, reelStrips[i], slotTextures);
       this.reels.push({
@@ -39,6 +32,17 @@ export class ReelsContainer extends Container {
         position: reelContainer.reelPositionX,
       });
       this.addChild(reelContainer);
+    }
+  }
+
+  initDiamonds() {
+    for (let i = 0; i < 2; i++) {
+      for (let j = 0; j < 3; j++) {
+        const diamond = new Sprite(Texture.from("diamond.png"));
+        diamond.x = REEL_WIDTH + app.screen.width / 3 - i * REEL_WIDTH;
+        diamond.y = SYMBOL_SIZE * j;
+        this.addChild(diamond);
+      }
     }
   }
 
