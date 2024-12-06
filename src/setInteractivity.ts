@@ -1,14 +1,19 @@
 import { Sprite, Text } from "pixi.js";
 import { Reel } from "./types.js";
 import TWEEN from "@tweenjs/tween.js";
-import { play } from "../slot-machine/src/play.js";
 import { app, SYMBOL_SIZE } from "./main.js";
+import { play } from "../slot-machine/src/play.js";
 
 // Function to start playing
 function startPlay(running: Boolean, reels: Reel[], line: string[]) {
   if (running) return;
   running = true;
 
+  const result = play(
+    { jackpotBonus: 3000, jackpotNegativeBonus: -139, bet: 2 },
+    1
+  );
+  console.log(result);
   // Custom easing function
   function backout(amount: number) {
     return (t: number) => --t * t * ((amount + 1) * t + amount) + 1;

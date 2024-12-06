@@ -9,7 +9,7 @@
     "start": "npx vite",
     "build": "npx tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "git submodule update --init --recursive && npm run build && cd slot-machine && npm install && npm start"
+    "postinstall": "git submodule update --init --recursive && npm run build && cd slot-machine && npm install"
   },
   "keywords": [],
   "author": "",
