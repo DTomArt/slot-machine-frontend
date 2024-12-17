@@ -9,23 +9,20 @@ export function onAssetsLoaded({ app }: Configuration): {
   reels: Reel[];
   buttonText: Text;
 } {
-  const reelsContainer = new ReelsContainer();
-  app.stage.addChild(reelsContainer);
-
   // Build top, bottom, left & right covers and position reelContainer
   const margin = (app.screen.height - SYMBOL_SIZE * 3) / 2;
-  reelsContainer.y = margin;
+  const reelsContainer = new ReelsContainer(margin);
   const reels = reelsContainer.getReels();
 
   const top = new Graphics();
   top.beginFill(0, 1);
-  top.drawRect(0, 0, app.screen.width, margin - 5);
+  top.drawRect(0, 0, app.screen.width, margin);
 
   const bottom = new Graphics();
   bottom.beginFill(0, 1);
   bottom.drawRect(
     0,
-    SYMBOL_SIZE * 3 + margin - 5,
+    top.height + reelsContainer.height,
     app.screen.width,
     margin + 5
   );
@@ -86,7 +83,7 @@ export function onAssetsLoaded({ app }: Configuration): {
   headerText.y = Math.round((margin - headerText.height) / 2);
   top.addChild(headerText);
 
-  app.stage.addChild(top, bottom, left, right);
+  app.stage.addChild(top, reelsContainer, bottom, left, right);
 
   return { button, reels, buttonText };
 }

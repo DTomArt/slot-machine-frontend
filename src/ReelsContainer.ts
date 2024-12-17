@@ -6,8 +6,9 @@ import { app, REEL_WIDTH, SYMBOL_SIZE } from "./main.js";
 export class ReelsContainer extends Container {
   private reels: Reel[] = [];
 
-  constructor() {
+  constructor(margin: number) {
     super();
+    this.y = margin;
 
     this.initDiamonds();
 
@@ -39,7 +40,8 @@ export class ReelsContainer extends Container {
     for (let i = 0; i < 2; i++) {
       for (let j = 0; j < 3; j++) {
         const diamond = new Sprite(Texture.from("diamond.png"));
-        diamond.x = REEL_WIDTH + app.screen.width / 3 - i * REEL_WIDTH;
+        diamond.anchor.set(0.5, 0);
+        diamond.x = app.screen.width / 2 + REEL_WIDTH / 2 - REEL_WIDTH * i;
         diamond.y = SYMBOL_SIZE * j;
         this.addChild(diamond);
       }
