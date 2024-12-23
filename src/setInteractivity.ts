@@ -5,12 +5,17 @@ import { app, SYMBOL_SIZE } from "./main.js";
 import { play } from "../slot-machine/src/play.js";
 
 // Function to start playing
-function startPlay(running: Boolean, reels: Reel[], line: string[]) {
+function startPlay(running: Boolean, reels: Reel[]) {
   if (running) return;
   running = true;
 
-  const result = play(1);
-  console.log(result);
+  const { reelsResult, totalWin } = play();
+  if (!reelsResult) {
+    throw new Error("Cannot get reels from backend");
+  }
+  console.log(reelsResult);
+  console.log(totalWin);
+
   // Custom easing function
   function backout(amount: number) {
     return (t: number) => --t * t * ((amount + 1) * t + amount) + 1;
@@ -18,9 +23,14 @@ function startPlay(running: Boolean, reels: Reel[], line: string[]) {
 
   for (let i = 0; i < reels.length; i++) {
     const r = reels[i];
+    const targetSymbolIndex = reels[i].symbols.findIndex((symbol: Sprite) =>
+      symbol.texture.textureCacheIds[0].includes(reelsResult[i])
+    );
     const extra = Math.floor(Math.random() * 3);
-    const target = r.position + 10 + i * 5 + extra;
+    let target = r.position + 20 + i * 5 + extra;
+    target = Math.round(target) + (targetSymbolIndex === -1 ? 0.5 : 0);
     const time = 3500 + i * 250;
+
     new TWEEN.Tween(r)
       .to({ position: target }, time)
       .onStart(() => {
@@ -28,10 +38,9 @@ function startPlay(running: Boolean, reels: Reel[], line: string[]) {
       })
       .easing(backout(0.2))
       .onComplete(() => {
-        isWinLineSymbol(r, line);
+        isWinLineSymbol(r, targetSymbolIndex);
         if (i === reels.length - 1) {
           running = false;
-          checkWinLine(line);
         }
         app.stage.emit("spin_stop");
       })
@@ -39,16 +48,13 @@ function startPlay(running: Boolean, reels: Reel[], line: string[]) {
   }
 }
 
-function isWinLineSymbol(currentReel: any, line: string[]) {
+function isWinLineSymbol(currentReel: Reel, targetSymbolIndex: number) {
   const winLineSymbol = currentReel.symbols.find(
     (symbol: Sprite) => Math.round(symbol.y) === 150
-  )._texture.textureCacheIds;
-  console.log(winLineSymbol);
-  line.push(winLineSymbol);
-}
-function checkWinLine(line: string[]) {
-  const win = line.every((x, i, a) => x === a[0]);
-  console.log(win ? "You won!" : "Try again!");
+  );
+  if (winLineSymbol)
+    winLineSymbol.texture = currentReel.symbols[targetSymbolIndex].texture;
+  // console.log(winLineSymbol?._texture?.textureCacheIds);
 }
 
 export function setInteractivity({
@@ -74,10 +80,8 @@ export function setInteractivity({
   button.cursor = "pointer";
   button.on("pointerdown", onButtonDown).on("pointerup", onButtonUp);
   let running = false;
-  // Function to check win line
-  let line: string[] = [];
   button.addListener("pointerdown", () => {
-    startPlay(running, reels, line);
+    startPlay(running, reels);
   });
 
   // Listen for animate update
@@ -86,7 +90,7 @@ export function setInteractivity({
     for (let i = 0; i < reels.length; i++) {
       const r = reels[i];
       // Update blur filter y amount based on speed
-      r.blur.blurY = (r.position - r.previousPosition) * 8;
+      r.blur.blurY = (r.position - r.previousPosition) * 100;
       r.previousPosition = r.position;
       // Update symbol positions on reel
       for (let j = 0; j < r.symbols.length; j++) {

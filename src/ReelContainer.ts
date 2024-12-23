@@ -29,7 +29,7 @@ export class ReelContainer extends Container {
   }
 
   private init() {
-    this.setUpRandomStrip();
+    // this.setUpRandomStrip();
     this.createElements();
   }
 

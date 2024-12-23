@@ -1,4 +1,4 @@
-import { Container, Sprite, Texture } from "pixi.js";
+import { Container, Graphics, Sprite, Texture } from "pixi.js";
 import { Reel } from "./types.js";
 import { ReelContainer } from "./ReelContainer.js";
 import { app, REEL_WIDTH, SYMBOL_SIZE } from "./main.js";
@@ -11,6 +11,7 @@ export class ReelsContainer extends Container {
     this.y = margin;
 
     this.initDiamonds();
+    this.initWinLine();
 
     const slotTextures = [
       Texture.from("singleBar.png"),
@@ -46,6 +47,18 @@ export class ReelsContainer extends Container {
         this.addChild(diamond);
       }
     }
+  }
+
+  initWinLine() {
+    const winLine = new Graphics()
+      .beginFill(0xff0000)
+      .drawRect(app.screen.width / 2, SYMBOL_SIZE * 1.5, REEL_WIDTH * 3, 3)
+      .endFill();
+    winLine.pivot.set(REEL_WIDTH * 1.5, 3);
+    this.sortableChildren = true;
+    winLine.zIndex = 10;
+    winLine.alpha = 0.25;
+    this.addChild(winLine);
   }
 
   getReels() {
