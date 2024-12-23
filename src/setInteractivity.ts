@@ -13,8 +13,15 @@ function startPlay(running: Boolean, reels: Reel[]) {
   if (!reelsResult) {
     throw new Error("Cannot get reels from backend");
   }
-  console.log(reelsResult);
-  console.log(totalWin);
+  const reelsResultCopyForLog = new Array(
+    reelsResult[2],
+    reelsResult[0],
+    reelsResult[1]
+  );
+  console.log("==========");
+  console.log("Result from spin: ", reelsResultCopyForLog);
+  console.log("TotalWin: ", totalWin);
+  console.log("==========");
 
   // Custom easing function
   function backout(amount: number) {
@@ -31,6 +38,22 @@ function startPlay(running: Boolean, reels: Reel[]) {
     target = Math.round(target) + (targetSymbolIndex === -1 ? 0.5 : 0);
     const time = 3500 + i * 250;
 
+    // swap texture on result from backend
+    const currentIndex = r.symbols.findIndex(
+      (symbol: Sprite) => Math.round(symbol.y) === 150
+    );
+    const howManySymbolsWillRoll = target - r.position;
+    if (Number.isInteger(howManySymbolsWillRoll)) {
+      const positionOfWinSymbol =
+        currentIndex - (howManySymbolsWillRoll % r.symbols.length);
+      const indexOfWinSymbol =
+        positionOfWinSymbol > 0
+          ? positionOfWinSymbol
+          : r.symbols.length - 1 + positionOfWinSymbol;
+      r.symbols[indexOfWinSymbol].texture =
+        r.symbols[targetSymbolIndex].texture;
+    }
+
     new TWEEN.Tween(r)
       .to({ position: target }, time)
       .onStart(() => {
@@ -38,7 +61,7 @@ function startPlay(running: Boolean, reels: Reel[]) {
       })
       .easing(backout(0.2))
       .onComplete(() => {
-        isWinLineSymbol(r, targetSymbolIndex);
+        // isWinLineSymbol(r, targetSymbolIndex);
         if (i === reels.length - 1) {
           running = false;
         }
@@ -48,14 +71,14 @@ function startPlay(running: Boolean, reels: Reel[]) {
   }
 }
 
-function isWinLineSymbol(currentReel: Reel, targetSymbolIndex: number) {
-  const winLineSymbol = currentReel.symbols.find(
-    (symbol: Sprite) => Math.round(symbol.y) === 150
-  );
-  if (winLineSymbol)
-    winLineSymbol.texture = currentReel.symbols[targetSymbolIndex].texture;
-  // console.log(winLineSymbol?._texture?.textureCacheIds);
-}
+// function isWinLineSymbol(currentReel: Reel, targetSymbolIndex: number) {
+//   const winLineSymbol = currentReel.symbols.find(
+//     (symbol: Sprite) => Math.round(symbol.y) === 150
+//   );
+// if (winLineSymbol)
+//   winLineSymbol.texture = currentReel.symbols[targetSymbolIndex].texture;
+// console.log(winLineSymbol?._texture?.textureCacheIds);
+// }
 
 export function setInteractivity({
   button,
