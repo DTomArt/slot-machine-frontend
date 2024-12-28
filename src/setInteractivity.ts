@@ -39,9 +39,14 @@ function startPlay(running: Boolean, reels: Reel[]) {
     const time = 3500 + i * 250;
 
     // swap texture on result from backend
-    const currentIndex = r.symbols.findIndex(
+    let currentIndex = r.symbols.findIndex(
       (symbol: Sprite) => Math.round(symbol.y) === 150
     );
+    if (currentIndex === -1) {
+      currentIndex = r.symbols.findIndex(
+        (symbol: Sprite) => Math.round(symbol.y) === 225
+      );
+    }
     const howManySymbolsWillRoll = target - r.position;
     if (Number.isInteger(howManySymbolsWillRoll)) {
       const positionOfWinSymbol =
@@ -50,8 +55,10 @@ function startPlay(running: Boolean, reels: Reel[]) {
         positionOfWinSymbol > 0
           ? positionOfWinSymbol
           : r.symbols.length - 1 + positionOfWinSymbol;
-      r.symbols[indexOfWinSymbol].texture =
-        r.symbols[targetSymbolIndex].texture;
+      if (targetSymbolIndex !== -1) {
+        r.symbols[indexOfWinSymbol].texture =
+          r.symbols[targetSymbolIndex].texture;
+      }
     }
 
     new TWEEN.Tween(r)
@@ -91,11 +98,11 @@ export function setInteractivity({
 }) {
   // Add buttonDown effect
   const onButtonDown = function () {
-    button.scale.set(0.25, 0.2);
+    button.scale.set(0.35, 0.3);
     buttonText.scale.set(2.95);
   };
   const onButtonUp = function () {
-    button.scale.set(0.3, 0.25);
+    button.scale.set(0.4, 0.35);
     buttonText.scale.set(3);
   };
   // Set the interactivity
