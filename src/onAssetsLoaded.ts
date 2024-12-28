@@ -48,14 +48,52 @@ export function onAssetsLoaded({ app }: Configuration): {
   // Build and position button
   const textureButton = Texture.from("button.png");
   const button = new Sprite(textureButton);
-  button.scale.set(0.3, 0.25);
+  button.scale.set(0.4, 0.35);
   button.anchor.set(0.5);
   button.x = Math.round(app.screen.width / 2);
-  button.y =
-    app.screen.height -
-    margin +
-    Math.round((bottom.height - button.height) / 2);
+  button.y = app.screen.height - margin / 2;
   bottom.addChild(button);
+
+  // Add text style
+  const counterTextStyle = new TextStyle({
+    fill: "#C2C2D2",
+    fontFamily: '"Palatino Linotype", "Book Antiqua", Palatino, serif',
+    fontSize: 43,
+    fontVariant: "small-caps",
+    fontWeight: "bold",
+    letterSpacing: 2,
+    lineJoin: "round",
+  });
+
+  // Build and position totalWinCounter
+  const textureCounter = Texture.from("counter.png");
+  const totalWinCounter = new Sprite(textureCounter);
+  const setCounterProps = (counterSprite: Sprite, rightSide: boolean) => {
+    counterSprite.scale.set(0.35, 0.25);
+    counterSprite.anchor.set(0.5);
+    counterSprite.x = Math.round(
+      app.screen.width / 2 + (rightSide ? button.width : -button.width)
+    );
+    counterSprite.y = app.screen.height - margin / 2;
+  };
+  setCounterProps(totalWinCounter, true);
+  bottom.addChild(totalWinCounter);
+
+  const totalWinText = new Text("TOTAL WIN:", counterTextStyle);
+  totalWinText.scale.set(2);
+  totalWinText.anchor.set(0.5);
+  totalWinText.y -= totalWinCounter.height * 2.5;
+  totalWinCounter.addChild(totalWinText);
+
+  const winCounter = new Sprite(textureCounter);
+  setCounterProps(winCounter, false);
+  bottom.addChild(winCounter);
+
+  const winText = new Text("WIN:", counterTextStyle);
+  winText.scale.set(2);
+  winText.anchor.set(0.5);
+  winText.y -= totalWinCounter.height * 2.5;
+  winCounter.addChild(winText);
 
   // Add text style
   const style = new TextStyle({
