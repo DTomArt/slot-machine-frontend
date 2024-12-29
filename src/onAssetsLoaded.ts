@@ -2,6 +2,11 @@ import { Graphics, Sprite, TextStyle, Texture, Text } from "pixi.js";
 import { Configuration, Reel } from "./types.js";
 import { ReelsContainer } from "./ReelsContainer.js";
 import { REEL_WIDTH, SYMBOL_SIZE } from "./main.js";
+import {
+  counterTextStyle,
+  counterTitleTextStyle,
+  headerTextStyle,
+} from "./textStyles.js";
 
 // onAssetsLoaded handler builds the slot machine
 export function onAssetsLoaded({ app }: Configuration): {
@@ -54,69 +59,77 @@ export function onAssetsLoaded({ app }: Configuration): {
   button.y = app.screen.height - margin / 2;
   bottom.addChild(button);
 
-  // Add text style
-  const counterTextStyle = new TextStyle({
-    fill: "#C2C2D2",
-    fontFamily: '"Palatino Linotype", "Book Antiqua", Palatino, serif',
-    fontSize: 43,
-    fontVariant: "small-caps",
-    fontWeight: "bold",
-    letterSpacing: 2,
-    lineJoin: "round",
-  });
-
-  // Build and position totalWinCounter
-  const textureCounter = Texture.from("counter.png");
-  const totalWinCounter = new Sprite(textureCounter);
-  const setCounterProps = (counterSprite: Sprite, rightSide: boolean) => {
-    counterSprite.scale.set(0.35, 0.25);
+  const setCounterProps = (
+    counterSprite: Sprite,
+    props: {
+      positionX: number;
+      scale?: { x: number | undefined; y: number | undefined };
+    }
+  ) => {
+    const { positionX, scale } = props;
+    counterSprite.scale.set(scale?.x ?? 0.35, scale?.y ?? 0.25);
     counterSprite.anchor.set(0.5);
-    counterSprite.x = Math.round(
-      app.screen.width / 2 + (rightSide ? button.width : -button.width)
-    );
+    counterSprite.x = Math.round(app.screen.width / 2 + positionX);
     counterSprite.y = app.screen.height - margin / 2;
   };
-  setCounterProps(totalWinCounter, true);
-  bottom.addChild(totalWinCounter);
 
-  const totalWinText = new Text("TOTAL WIN:", counterTextStyle);
-  totalWinText.scale.set(2);
-  totalWinText.anchor.set(0.5);
-  totalWinText.y -= totalWinCounter.height * 2.5;
-  totalWinCounter.addChild(totalWinText);
+  const addCounter = (
+    counter: Sprite,
+    text: string,
+    inHalfOfTexture: boolean = false
+  ) => {
+    const newText = new Text(text, counterTextStyle);
+    newText.scale.set(2);
+    newText.anchor.set(0.5);
+    newText.x += inHalfOfTexture ? counter.width / 2 : counter.width;
+    counter.addChild(newText);
+  };
+
+  const addTextToCounter = (counter: Sprite, text: string) => {
+    const newText = new Text(text, counterTitleTextStyle);
+    newText.scale.set(2);
+    newText.anchor.set(0.5);
+    newText.y -= counter.height * 2.5;
+    counter.addChild(newText);
+  };
+
+  const textureCounter = Texture.from("counter.png");
+  const textureCounterSmall = Texture.from("counterSmall.png");
+
+  // Build and position counters: coinsIn, totalWin, win
+  const coinsInCounter = new Sprite(textureCounter);
+  setCounterProps(coinsInCounter, {
+    positionX: -button.width,
+  });
+  bottom.addChild(coinsInCounter);
+  addTextToCounter(coinsInCounter, "COINS IN");
+  addCounter(coinsInCounter, "0");
 
   const winCounter = new Sprite(textureCounter);
-  setCounterProps(winCounter, false);
-  bottom.addChild(winCounter);
-
-  const winText = new Text("WIN:", counterTextStyle);
-  winText.scale.set(2);
-  winText.anchor.set(0.5);
-  winText.y -= totalWinCounter.height * 2.5;
-  winCounter.addChild(winText);
-
-  // Add text style
-  const style = new TextStyle({
-    fill: "#ffffff",
-    fillGradientStops: [0.6],
-    fontFamily: '"Palatino Linotype", "Book Antiqua", Palatino, serif',
-    fontSize: 36,
-    fontVariant: "small-caps",
-    fontWeight: "bold",
-    letterSpacing: 2,
-    lineJoin: "round",
-    stroke: "#2403fc",
-    strokeThickness: 3,
+  setCounterProps(winCounter, {
+    positionX: button.width,
   });
+  bottom.addChild(winCounter);
+  addTextToCounter(winCounter, "TOTAL WIN");
+  addCounter(winCounter, "0");
+
+  const totalWinCounter = new Sprite(textureCounterSmall);
+  setCounterProps(totalWinCounter, {
+    positionX: button.width + winCounter.width,
+    scale: { x: 0.35, y: 0.3 },
+  });
+  bottom.addChild(totalWinCounter);
+  addTextToCounter(totalWinCounter, "WIN");
+  addCounter(totalWinCounter, "0", true);
 
   // Add button text
-  const buttonText = new Text("SPIN", style);
+  const buttonText = new Text("SPIN", headerTextStyle);
   buttonText.scale.set(3);
   buttonText.anchor.set(0.5);
   button.addChild(buttonText);
 
   // Add header text
-  const headerText = new Text("BLACK GOLD SLOT MACHINE", style);
+  const headerText = new Text("BLACK GOLD SLOT MACHINE", headerTextStyle);
   headerText.x = Math.round((top.width - headerText.width) / 2);
   headerText.y = Math.round((margin - headerText.height) / 2);
   top.addChild(headerText);

@@ -12,6 +12,10 @@ export async function preload() {
     { alias: "button.png", src: "src/static/img/300px/BUTTON.png" },
     { alias: "diamond.png", src: "src/static/img/300px/DIAMOND.png" },
     { alias: "counter.png", src: "src/static/img/300px/COUNTER.png" },
+    {
+      alias: "counterSmall.png",
+      src: "src/static/img/300px/COUNTER_SMALL.png",
+    },
   ];
   assets.map((o) => Assets.add(o.alias, o.src));
   await Assets.load(assets.map((a) => a.alias));
