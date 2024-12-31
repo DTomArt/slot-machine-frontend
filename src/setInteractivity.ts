@@ -1,4 +1,4 @@
-import { Sprite, Text } from "pixi.js";
+import { Sprite, Text, Texture } from "pixi.js";
 import { Reel } from "./types.js";
 import TWEEN from "@tweenjs/tween.js";
 import { app, SYMBOL_SIZE } from "./main.js";
@@ -30,12 +30,14 @@ function startPlay(running: Boolean, reels: Reel[]) {
 
   for (let i = 0; i < reels.length; i++) {
     const r = reels[i];
-    const targetSymbolIndex = reels[i].symbols.findIndex((symbol: Sprite) =>
+    const targetSymbolIndex = r.symbols.findIndex((symbol: Sprite) =>
       symbol.texture.textureCacheIds[0].includes(reelsResult[i])
     );
     const extra = Math.floor(Math.random() * 3);
-    let target = r.position + 20 + i * 5 + extra;
-    target = Math.round(target) + (targetSymbolIndex === -1 ? 0.5 : 0);
+    const howManySymbolsWillRoll =
+      20 + i * 5 + extra + (targetSymbolIndex === -1 ? 0.5 : 0);
+    let target = Math.round(r.position) + howManySymbolsWillRoll;
+
     const time = 3500 + i * 250;
 
     // swap texture on result from backend
@@ -46,18 +48,20 @@ function startPlay(running: Boolean, reels: Reel[]) {
       currentIndex = r.symbols.findIndex(
         (symbol: Sprite) => Math.round(symbol.y) === 225
       );
+      target++;
     }
-    const howManySymbolsWillRoll = target - r.position;
     if (Number.isInteger(howManySymbolsWillRoll)) {
-      const positionOfWinSymbol =
-        currentIndex - (howManySymbolsWillRoll % r.symbols.length);
-      const indexOfWinSymbol =
-        positionOfWinSymbol > 0
-          ? positionOfWinSymbol
-          : r.symbols.length - 1 + positionOfWinSymbol;
+      const indexOfWinSymbol = r.symbols.findIndex(
+        (_, index) =>
+          Math.round(
+            ((target + index) % r.symbols.length) * SYMBOL_SIZE - SYMBOL_SIZE
+          ) === 150
+      );
       if (targetSymbolIndex !== -1) {
+        const buffer = r.symbols[indexOfWinSymbol].texture;
         r.symbols[indexOfWinSymbol].texture =
           r.symbols[targetSymbolIndex].texture;
+        r.symbols[targetSymbolIndex].texture = buffer;
       }
     }
 
@@ -120,7 +124,7 @@ export function setInteractivity({
     for (let i = 0; i < reels.length; i++) {
       const r = reels[i];
       // Update blur filter y amount based on speed
-      r.blur.blurY = (r.position - r.previousPosition) * 100;
+      r.blur.blurY = (r.position - r.previousPosition) * 80;
       r.previousPosition = r.position;
       // Update symbol positions on reel
       for (let j = 0; j < r.symbols.length; j++) {
