@@ -1,140 +1,57 @@
-import { Graphics, Sprite, TextStyle, Texture, Text } from "pixi.js";
+import { Text, Container } from "pixi.js";
 import { Configuration, Reel } from "./types.js";
 import { ReelsContainer } from "./ReelsContainer.js";
-import { REEL_WIDTH, SYMBOL_SIZE } from "./main.js";
-import {
-  counterTextStyle,
-  counterTitleTextStyle,
-  headerTextStyle,
-} from "./textStyles.js";
+import { SYMBOL_SIZE } from "./main.js";
+import { headerTextStyle } from "./textStyles.js";
+import { UI } from "./view/UI.js";
+import TWEEN from "@tweenjs/tween.js";
+import { GameContainer } from "./GameContainer.js";
+
 
 // onAssetsLoaded handler builds the slot machine
-export function onAssetsLoaded({ app }: Configuration): {
-  button: Sprite;
-  reels: Reel[];
-  buttonText: Text;
-} {
-  // Build top, bottom, left & right covers and position reelContainer
-  const margin = (app.screen.height - SYMBOL_SIZE * 3) / 2;
-  const reelsContainer = new ReelsContainer(margin);
-  const reels = reelsContainer.getReels();
+export function onAssetsLoaded({ app }: Configuration): Reel[] {
+    const gameContainer = new GameContainer();
+    const designWidth = GameContainer.DESIGN_WIDTH;
+    const designHeight = GameContainer.DESIGN_HEIGHT;
 
-  const top = new Graphics();
-  top.beginFill(0, 1);
-  top.drawRect(0, 0, app.screen.width, margin);
+    // Build top, bottom, left & right covers and position reelContainer
+    const marginHeight = (designHeight - SYMBOL_SIZE * 3) / 2;
+    const reelsContainer = new ReelsContainer(marginHeight);
+    const reels = reelsContainer.getReels();
 
-  const bottom = new Graphics();
-  bottom.beginFill(0, 1);
-  bottom.drawRect(
-    0,
-    top.height + reelsContainer.height,
-    app.screen.width,
-    margin + 5
-  );
+    const headerContainer = new Container();
+    headerContainer.x = designWidth / 2;
+    headerContainer.y = marginHeight / 2;
+    headerContainer.pivot.x = headerContainer.width / 2;
 
-  const left = new Graphics();
-  left.beginFill(0, 1);
-  left.drawRect(
-    0,
-    margin - 5,
-    Math.round(app.screen.width - REEL_WIDTH * 5) / 2,
-    app.screen.height - margin * 2
-  );
+    const UIContainer = new UI();
 
-  const right = new Graphics();
-  right.beginFill(0, 1);
-  right.drawRect(
-    Math.round(app.screen.width - (app.screen.width - REEL_WIDTH * 5) / 2),
-    margin - 5,
-    Math.round(app.screen.width - REEL_WIDTH * 5) / 2,
-    app.screen.height - margin * 2
-  );
+    // Add header text
+    const headerText = new Text("BLACK GOLD SLOT MACHINE", headerTextStyle);
+    headerText.pivot.x = headerText.width / 2;
+    headerContainer.addChild(headerText);
 
-  // Build and position button
-  const textureButton = Texture.from("button.png");
-  const button = new Sprite(textureButton);
-  button.scale.set(0.4, 0.35);
-  button.anchor.set(0.5);
-  button.x = Math.round(app.screen.width / 2);
-  button.y = app.screen.height - margin / 2;
-  bottom.addChild(button);
+    gameContainer.addChild(headerContainer, reelsContainer, UIContainer);
+    app.stage.addChild(gameContainer);
 
-  const setCounterProps = (
-    counterSprite: Sprite,
-    props: {
-      positionX: number;
-      scale?: { x: number | undefined; y: number | undefined };
-    }
-  ) => {
-    const { positionX, scale } = props;
-    counterSprite.scale.set(scale?.x ?? 0.35, scale?.y ?? 0.25);
-    counterSprite.anchor.set(0.5);
-    counterSprite.x = Math.round(app.screen.width / 2 + positionX);
-    counterSprite.y = app.screen.height - margin / 2;
-  };
+    // Listen for animate update
+    app.ticker.add(() => {
+        // Update the slots
+        for (let i = 0; i < reels.length; i++) {
+            const reel = reels[i];
+            // Update blur filter y amount based on speed
+            reel.blur.blurY = (reel.position - reel.previousPosition) * 80;
+            reel.previousPosition = reel.position;
+            // Update symbol positions on reel
+            for (let j = 0; j < reel.symbols.length; j++) {
+                const symbol = reel.symbols[j];
+                symbol.y = ((reel.position + j) % reel.symbols.length) * SYMBOL_SIZE - SYMBOL_SIZE;
+            }
+        }
+        // Update tweens group
+        TWEEN.update();
+    });
 
-  const addCounter = (
-    counter: Sprite,
-    text: string,
-    inHalfOfTexture: boolean = false
-  ) => {
-    const newText = new Text(text, counterTextStyle);
-    newText.scale.set(2);
-    newText.anchor.set(0.5);
-    newText.x += inHalfOfTexture ? counter.width / 2 : counter.width;
-    counter.addChild(newText);
-  };
-
-  const addTextToCounter = (counter: Sprite, text: string) => {
-    const newText = new Text(text, counterTitleTextStyle);
-    newText.scale.set(2);
-    newText.anchor.set(0.5);
-    newText.y -= counter.height * 2.5;
-    counter.addChild(newText);
-  };
-
-  const textureCounter = Texture.from("counter.png");
-  const textureCounterSmall = Texture.from("counterSmall.png");
-
-  // Build and position counters: coinsIn, totalWin, win
-  const coinsInCounter = new Sprite(textureCounter);
-  setCounterProps(coinsInCounter, {
-    positionX: -button.width,
-  });
-  bottom.addChild(coinsInCounter);
-  addTextToCounter(coinsInCounter, "COINS IN");
-  addCounter(coinsInCounter, "0");
-
-  const winCounter = new Sprite(textureCounter);
-  setCounterProps(winCounter, {
-    positionX: button.width,
-  });
-  bottom.addChild(winCounter);
-  addTextToCounter(winCounter, "TOTAL WIN");
-  addCounter(winCounter, "0");
-
-  const totalWinCounter = new Sprite(textureCounterSmall);
-  setCounterProps(totalWinCounter, {
-    positionX: button.width + winCounter.width,
-    scale: { x: 0.35, y: 0.3 },
-  });
-  bottom.addChild(totalWinCounter);
-  addTextToCounter(totalWinCounter, "WIN");
-  addCounter(totalWinCounter, "0", true);
-
-  // Add button text
-  const buttonText = new Text("SPIN", headerTextStyle);
-  buttonText.scale.set(3);
-  buttonText.anchor.set(0.5);
-  button.addChild(buttonText);
-
-  // Add header text
-  const headerText = new Text("BLACK GOLD SLOT MACHINE", headerTextStyle);
-  headerText.x = Math.round((top.width - headerText.width) / 2);
-  headerText.y = Math.round((margin - headerText.height) / 2);
-  top.addChild(headerText);
-
-  app.stage.addChild(top, reelsContainer, bottom, left, right);
-
-  return { button, reels, buttonText };
+    return reels;
 }
+

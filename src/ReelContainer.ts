@@ -6,7 +6,8 @@ import {
     Sprite,
     Texture,
 } from "pixi.js";
-import { app, REEL_WIDTH, SYMBOL_SIZE } from "./main.js";
+import { REEL_WIDTH, SYMBOL_SIZE } from "./main.js";
+import { GameContainer } from "./GameContainer.js";
 
 export class ReelContainer extends Container {
     public symbols: Sprite[] = [];
@@ -51,6 +52,12 @@ export class ReelContainer extends Container {
         this.symbols = this.createSymbols();
     }
 
+    private getReelX(): number {
+        const center = GameContainer.DESIGN_WIDTH / 2;
+        const offset = this.id === 0 ? 0 : this.id === 2 ? -REEL_WIDTH : REEL_WIDTH;
+        return center + offset * GameContainer.spreadX;
+    }
+
     private createReelBackground(): Sprite {
         // add reel background
         const reelBackground = new Sprite(Texture.from("symbolBack.png"));
@@ -58,38 +65,29 @@ export class ReelContainer extends Container {
         reelBackground.anchor.set(0.5, 0);
         reelBackground.scale.x = 0.22;
         reelBackground.scale.y = 0.45;
-        reelBackground.x =
-            this.id === 0
-                ? app.screen.width / 2
-                : this.id === 2
-                    ? app.screen.width / 2 - REEL_WIDTH
-                    : app.screen.width / 2 + REEL_WIDTH;
+        reelBackground.x = this.getReelX();
         return this.addChild(reelBackground);
     }
 
     private createReelMask(): Graphics {
         const reelBackgroundFrameTop = 15;
         const reelBackgroundFrameBottom = 30;
+        // Mask is relative to ReelsContainer which already has y = marginHeight
         const symbolsInRangeMask = new Graphics()
             .beginFill(0xff0000)
             .drawRect(
                 this.reelBackground.x - REEL_WIDTH / 2,
-                (app.screen.height - SYMBOL_SIZE * 3) / 2 + reelBackgroundFrameTop,
+                reelBackgroundFrameTop,
                 REEL_WIDTH,
                 this.reelBackground.height - reelBackgroundFrameBottom
             )
             .endFill();
-        return symbolsInRangeMask;
+        return this.addChild(symbolsInRangeMask);
     }
 
     private createReelContainer(): Container {
         const rc = new Container();
-        rc.x =
-            this.id === 0
-                ? app.screen.width / 2
-                : this.id === 2
-                    ? app.screen.width / 2 - REEL_WIDTH
-                    : app.screen.width / 2 + REEL_WIDTH;
+        rc.x = this.getReelX();
 
         rc.filters = [this.blur];
         rc.mask = this.reelMask;

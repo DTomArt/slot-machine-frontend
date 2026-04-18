@@ -20,10 +20,10 @@ function preloadSounds() {
 }
 
 function setSounds() {
-    app.stage.on("spin_play", () => {
+    app.stage.on("spin_play_sound", () => {
         sound.play("spin");
     });
-    app.stage.on("spin_stop", () => {
+    app.stage.on("spin_stop_sound", () => {
         sound.play("stop");
     });
 }
