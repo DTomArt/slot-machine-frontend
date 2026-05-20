@@ -8,7 +8,7 @@ import { app } from "./main.js";
 export class GameContainer extends Container {
     static readonly DESIGN_WIDTH = 1920;
     static readonly DESIGN_HEIGHT = 1080;
-    private static readonly PORTRAIT_THRESHOLD = 800;
+    private static readonly PORTRAIT_THRESHOLD = 900;
 
     /** How much to spread elements horizontally from center (1.0 = default, >1 = wider) */
     static spreadX: number = 1;
@@ -22,20 +22,21 @@ export class GameContainer extends Container {
     private resize() {
         const scaleX = app.screen.width / GameContainer.DESIGN_WIDTH;
         const scaleY = app.screen.height / GameContainer.DESIGN_HEIGHT;
-        const scaleUniform = Math.min(scaleX, scaleY);
 
-        // In landscape, use scaleY for height but stretch X to fill width
-        // if (app.screen.width > GameContainer.PORTRAIT_THRESHOLD) {
-        //     GameContainer.spreadX = scaleX / scaleY;
-        //     this.scale.set(scaleX, scaleY);
-        //     this.x = 0;
-        //     this.y = 0;
-        // } else {
-        // Portrait: uniform scale, centered
-        GameContainer.spreadX = 1;
-        this.scale.set(scaleUniform);
-        this.x = (app.screen.width - GameContainer.DESIGN_WIDTH * scaleUniform) / 2;
-        this.y = (app.screen.height - GameContainer.DESIGN_HEIGHT * scaleUniform) / 2;
-        // }
+        if (app.screen.width > GameContainer.PORTRAIT_THRESHOLD) {
+            // Landscape: fill viewport, no margins
+            const scale = Math.max(scaleX, scaleY);
+            GameContainer.spreadX = 1;
+            this.scale.set(scale);
+            this.x = (app.screen.width - GameContainer.DESIGN_WIDTH * scale) / 2;
+            this.y = (app.screen.height - GameContainer.DESIGN_HEIGHT * scale) / 2;
+        } else {
+            // Portrait: fill screen width, scale down uniformly
+            const scale = app.screen.width / (GameContainer.DESIGN_WIDTH * 0.55);
+            GameContainer.spreadX = 1;
+            this.scale.set(scale);
+            this.x = (app.screen.width - GameContainer.DESIGN_WIDTH * scale) / 2;
+            this.y = (app.screen.height - GameContainer.DESIGN_HEIGHT * scale) / 2;
+        }
     }
 }
