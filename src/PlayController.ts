@@ -1,7 +1,8 @@
-import { Sprite, Text, Texture } from "pixi.js";
+import { Sprite } from "pixi.js";
 import { Reel } from "./types.js";
 import TWEEN from "@tweenjs/tween.js";
-import { app, SYMBOL_SIZE } from "./main.js";
+import { app } from "./main.js";
+import { SYMBOL_SIZE } from "./layout.js";
 import { play } from "../slot-machine/src/play.js";
 
 export class PlayController {
@@ -49,7 +50,7 @@ export class PlayController {
                 20 + i * 5 + extra + (targetSymbolIndex === -1 ? 0.5 : 0);
             let target = Math.round(r.position) + howManySymbolsWillRoll;
 
-            const time = 3500 + i * 250;
+            const time = 2800 + i * 200;
 
             // swap texture on result from backend
             let currentIndex = r.symbols.findIndex(
@@ -84,9 +85,10 @@ export class PlayController {
                 .easing(backout(0.2))
                 .onComplete(() => {
                     // isWinLineSymbol(r, targetSymbolIndex);
-                    app.stage.emit("spin_stop_sound");
                     if (i === this.reels.length - 1) {
-                        app.stage.emit("spin_ended");
+                        app.stage.emit("spin_last_reel_stop");
+                    } else {
+                        app.stage.emit("spin_stop_sound");
                     }
                 })
                 .start();

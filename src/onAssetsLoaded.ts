@@ -1,27 +1,24 @@
 import { Text, Container } from "pixi.js";
 import { Configuration, Reel } from "./types.js";
 import { ReelsContainer } from "./ReelsContainer.js";
-import { SYMBOL_SIZE } from "./main.js";
+import { SYMBOL_SIZE } from "./layout.js";
 import { headerTextStyle } from "./textStyles.js";
 import { UI } from "./view/UI.js";
 import TWEEN from "@tweenjs/tween.js";
 import { GameContainer } from "./GameContainer.js";
+import { layout } from "./layout.js";
 
 
 // onAssetsLoaded handler builds the slot machine
 export function onAssetsLoaded({ app }: Configuration): Reel[] {
     const gameContainer = new GameContainer();
-    const designWidth = GameContainer.DESIGN_WIDTH;
-    const designHeight = GameContainer.DESIGN_HEIGHT;
 
-    // Build top, bottom, left & right covers and position reelContainer
-    const marginHeight = (designHeight - SYMBOL_SIZE * 3) / 2;
-    const reelsContainer = new ReelsContainer(marginHeight);
+    const reelsContainer = new ReelsContainer(layout.reels.y);
     const reels = reelsContainer.getReels();
 
     const headerContainer = new Container();
-    headerContainer.x = designWidth / 2;
-    headerContainer.y = marginHeight / 2;
+    headerContainer.x = layout.header.x;
+    headerContainer.y = layout.header.y;
     headerContainer.pivot.x = headerContainer.width / 2;
 
     const UIContainer = new UI();

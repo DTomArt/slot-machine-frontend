@@ -6,7 +6,7 @@ import * as PIXI from "pixi.js";
 import { preload } from "./preloader/preload.js";
 
 export const REEL_WIDTH = 350;
-export const SYMBOL_SIZE = 150;
+
 
 // Create the application
 export const app = new Application<HTMLCanvasElement>({

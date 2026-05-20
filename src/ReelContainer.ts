@@ -6,7 +6,8 @@ import {
     Sprite,
     Texture,
 } from "pixi.js";
-import { REEL_WIDTH, SYMBOL_SIZE } from "./main.js";
+import { REEL_WIDTH } from "./main.js";
+import { SYMBOL_SIZE } from "./layout.js";
 import { GameContainer } from "./GameContainer.js";
 
 export class ReelContainer extends Container {
